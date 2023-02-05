@@ -1,0 +1,64 @@
+# flake8 configuration file for tests
+#
+# Errors cause failures in the "make test" target
+
+
+[flake8]
+
+hang_closing = False
+
+### Ignore
+# W291,W293,W391: whitespace related
+# F401: Unused import
+
+ignore =
+  W291,W293,W391,
+  # Whitespace related
+  F401,
+  # Unused import
+  E266,
+  # Too many leading '#' for block comment
+  E123,
+  # Closing bracket does not match indentation of opening bracket's line
+  E402,
+  # Module level import not at top of file (TODO: cleanup)
+  E129,
+  # Visually indented line with same indent as next logical line
+  E221,
+  # multiple spaces before operator (TODO: cleanup)
+  E225,
+  # missing whitespace around operator (TODO: cleanup)
+  E241,
+  # multiple spaces after ',' (TODO: cleanup)
+  E261,
+  # at least two spaces before inline comment (TODO: cleanup)
+  E302,
+  # expected 2 blank lines, found 1 (TODO: cleanup)
+  E303,
+  # too many blank lines (3) (TODO: cleanup)
+  E305,
+  # expected 2 blank lines after class or function definition, found 3 (TODO: cleanup)
+  E501,
+  # line too long (724 > 200 characters) (TODO: cleanup)
+  E711,
+  # comparison to None should be 'if cond is None:' (TODO: cleanup)
+  E712,
+  # comparison to True should be 'if cond is True:' or 'if cond:' (TODO: cleanup)
+  #F811,
+  # redefinition of unused 'to_json' from line 35 (TODO: cleanup)
+  F821,
+  # undefined name 'InvalidChecksum' (TODO: cleanup)
+  F841,
+  # local variable 'event_type' is assigned to but never used (TODO: cleanup)
+  W503,
+  # line break before binary operator (TODO: cleanup)
+  W504,
+  # line break after binary operator (TODO: cleanup)
+  W605
+  # invalid escape sequence '\?' (TODO: cleanup)
+
+
+# max-line-length = 120
+max-line-length = 200
+
+# exclude =
