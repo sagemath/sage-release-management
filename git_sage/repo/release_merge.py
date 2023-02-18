@@ -6,7 +6,7 @@ from git_sage.repo.wrap_lines import wrap_lines
 from git_sage.util.uniq import uniq
 from github.NamedUser import NamedUser
 from github.PullRequest import PullRequest
-from pygit2 import Branch, Commit, Remote, Repository
+from pygit2 import Branch, Commit, Remote, RemoteCallbacks, Repository
 
 log = logging.getLogger('git-sage')
 
@@ -35,10 +35,12 @@ class ReleaseMerge(object):
     def __init__(self,
                  repo: Repository,
                  github: Remote,
+                 callbacks: RemoteCallbacks,
                  pr: PullRequest,
                  ) -> None:
         self.repo: Final[Repository] = repo
         self.github: Final[Remote] = github
+        self.callbacks: Final[RemoteCallbacks] = callbacks
         self.pr: Final[PullRequest] = pr
 
     @cached_property
@@ -62,42 +64,14 @@ class ReleaseMerge(object):
             reviewers=', '.join(self.reviewer_names),
         )
 
-    # @cached_property
-    # def branch(self) -> Branch:
-    #     number = self.pr.number
-    #     name = f'refs/pull/{number}/head'
-    #     log.debug(f'pr branch name should be {name}')
-    #     branch = self.repo.branches.get(name)
-    #     if not branch:
-    #         raise ValueError(f'branch {name} not found')
-    #     return branch
-
     @property
     def branch_tip(self) -> Commit:
         number = self.pr.number
         name = f'refs/pull/{number}/head'
         log.debug(f'pr branch name should be {name}')
-        self.github.fetch([name])
+        self.github.fetch([name], callbacks=self.callbacks)
         return self.repo.revparse_single('FETCH_HEAD')
     
-        # print(origin.fetch_refspecs)
-        # print(origin.fetch())
-        # print(dir(origin))
-        # print(origin.fetch_refspecs)
-        # print(origin.refspec_count)
-        # print(origin.get_refspec(0).src)
-        # print(origin.get_refspec(0).dst)
-        # print(dir(origin.get_refspec(0)))
-        # # print(origin.ls_remotes())
-        # print(dir(origin))
-        # print(self.repo.lookup_reference_dwim('refs/remotes/origin/develop'))
-        # name = f'refs/remotes/origin/pull/{number}/head'
-        # log.debug(f'pr ref name should be {name}')
-        # ref = self.repo.lookup_reference_dwim(name)
-        # if not ref:
-        #     raise ValueError(f'pr ref {name} not found')
-        # return ref
-
     def merge_commit(self) -> Commit:
         """
         Add the release commit to the repository, and return the merge commit

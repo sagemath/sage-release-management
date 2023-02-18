@@ -7,7 +7,7 @@ import pygit2
 from git_sage.config.config import GitSageConfig
 from git_sage.repo.release_merge import ReleaseMerge
 from github.PullRequest import PullRequest
-from pygit2 import Remote, Repository
+from pygit2 import Remote, RemoteCallbacks, Repository
 
 log = logging.getLogger('git-sage')
 
@@ -24,6 +24,12 @@ class SageRepository(object):
         self.config: Final[GitSageConfig] = config
         self._verify_remotes()
 
+    @cached_property
+    def callbacks(self) -> RemoteCallbacks:
+        keypair = pygit2.KeypairFromAgent('git')
+        callbacks = pygit2.RemoteCallbacks(credentials=keypair)
+        return callbacks
+        
     @cached_property
     def repo(self) -> Repository:
         path = self._path_from_local() or self._path_from_cwd()
@@ -60,15 +66,14 @@ class SageRepository(object):
             raise SageRepositoryException('github remote not defined')
     
     def _verify_remotes(self) -> None:
-        origin_url = 'git@github.com:vbraun/sage.git'
-        # github_url = 'git@github.com:sagemath/sage.git'
-        github_url = 'https://github.com/sagemath/sage.git'
-        if self.origin.url != origin_url:
+        origin_url = ['git@github.com:vbraun/sage.git']
+        github_url = ['git@github.com:sagemath/sage.git', 'https://github.com/sagemath/sage.git']
+        if self.origin.url not in origin_url:
             raise SageRepositoryException(f'origin remote should be {origin_url}')
-        if self.github.url != github_url:
+        if self.github.url not in github_url:
             raise SageRepositoryException(f'github remote should be {github_url}')
 
     def merge_pr(self, pr: PullRequest) -> None:
-        release = ReleaseMerge(self.repo, self.github, pr)
+        release = ReleaseMerge(self.repo, self.github, self.callbacks, pr)
         release.merge_commit()
 
