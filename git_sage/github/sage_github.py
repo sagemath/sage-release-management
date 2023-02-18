@@ -23,7 +23,7 @@ class SageGithub(object):
 
     @cached_property
     def repo(self) -> Repository:
-        return self.gh.get_repo('sagemath/sage-archive-2023-02-01')  # 'vbraun/sage')
+        return self.gh.get_repo('sagemath/sage')  # 'vbraun/sage')
 
     def pull_requests(self) -> Iterable[PullRequest]:
         return self.repo.get_pulls(state='closed', sort='created')

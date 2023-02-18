@@ -1,6 +1,6 @@
 import logging
 from functools import cached_property
-from typing import Final
+from typing import Final, List
 
 from git_sage.config.config import GitSageConfig
 from git_sage.config.loader import config_file_path, config_loader
@@ -21,7 +21,7 @@ class Application(object):
         return config_loader(config_yaml)
 
     @cached_property
-    def repo(self) -> SageRepository:
+    def sage(self) -> SageRepository:
         return SageRepository(
             config=self.config,
         )
@@ -42,3 +42,8 @@ class Application(object):
                 return
             print(pr)
             count += 1
+
+    def merge_cmd(self, pr_numbers: List[int], limit: int) -> None:
+        for pr_number in pr_numbers:
+            pr = self.github.repo.get_pull(pr_number)
+            self.sage.merge_pr(pr)

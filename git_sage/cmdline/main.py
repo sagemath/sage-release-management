@@ -17,3 +17,5 @@ def main() -> None:
     app = Application()
     if args.subcommand == 'todo':
         app.todo_cmd(args.limit)
+    if args.subcommand == 'merge':
+        app.merge_cmd(args.pr_number, args.limit)
