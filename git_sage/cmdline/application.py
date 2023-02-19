@@ -47,5 +47,7 @@ class Application(object):
             self.sage.merge_pr(spr.pr)
         if not pr_numbers:
             for spr in self.github.pull_requests(limit):
+                if not spr.is_positive_review:
+                    continue
                 print(f'Merging {spr.pr}')
                 self.sage.merge_pr(spr.pr)
