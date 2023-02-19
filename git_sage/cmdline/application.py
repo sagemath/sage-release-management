@@ -36,14 +36,16 @@ class Application(object):
         """
         Print the next open pull requests
         """
-        count: int = 0
-        for pr in self.github.pull_requests():
-            if count >= limit:
-                return
-            print(pr)
-            count += 1
+        self.github.print_table(limit)
 
     def merge_cmd(self, pr_numbers: List[int], limit: int) -> None:
         for pr_number in pr_numbers:
-            pr = self.github.repo.get_pull(pr_number)
-            self.sage.merge_pr(pr)
+            spr = self.github.get_pull(pr_number)
+            if not spr.is_positive_review:
+                raise ValueError(f'pr {pr_number} does not have positive review')
+            print(f'Merging {spr.pr}')
+            self.sage.merge_pr(spr.pr)
+        if not pr_numbers:
+            for spr in self.github.pull_requests(limit):
+                print(f'Merging {spr.pr}')
+                self.sage.merge_pr(spr.pr)

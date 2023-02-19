@@ -54,7 +54,6 @@ class ReleaseMerge(object):
         
     @cached_property
     def message(self) -> str:
-        print(self.pr)
         return TEMPLATE.format(
             number=self.pr.number,
             title=self.pr.title,
@@ -76,6 +75,7 @@ class ReleaseMerge(object):
         """
         Add the release commit to the repository, and return the merge commit
         """
+        log.info(f'Merging {self.pr}')
         branch_tip = self.branch_tip.oid
         self.repo.merge(branch_tip)
         user = self.repo.default_signature
