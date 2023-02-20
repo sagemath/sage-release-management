@@ -2,6 +2,7 @@ import logging
 from functools import cached_property
 from typing import Final, List
 
+from git_sage.cmdline.merge_command import MergeCommand
 from git_sage.config.config import GitSageConfig
 from git_sage.config.loader import config_file_path, config_loader
 from git_sage.github.sage_github import SageGithub
@@ -39,15 +40,5 @@ class Application(object):
         self.github.print_table(limit)
 
     def merge_cmd(self, pr_numbers: List[int], limit: int) -> None:
-        for pr_number in pr_numbers:
-            spr = self.github.get_pull(pr_number)
-            if not spr.is_positive_review:
-                raise ValueError(f'pr {pr_number} does not have positive review')
-            print(f'Merging {spr.pr}')
-            self.sage.merge_pr(spr.pr)
-        if not pr_numbers:
-            for spr in self.github.pull_requests(limit):
-                if not spr.is_positive_review:
-                    continue
-                print(f'Merging {spr.pr}')
-                self.sage.merge_pr(spr.pr)
+        cmd = MergeCommand(self.sage, self.github)
+        cmd(pr_numbers, limit)

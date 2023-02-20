@@ -1,6 +1,6 @@
 import logging
 from functools import cached_property
-from typing import Final, Iterable, List
+from typing import Final, Iterable, List, Optional
 
 from git_sage.config.config import GitSageConfig
 from git_sage.github.pr_table import PullRequestTable
@@ -31,7 +31,7 @@ class SageGithub(object):
         pr = self.repo.get_pull(pr_number)
         return SagePullRequest(pr)
     
-    def pull_requests(self, limit: int) -> Iterable[SagePullRequest]:
+    def pull_requests(self, limit: Optional[int]) -> Iterable[SagePullRequest]:
         pulls = self.repo.get_pulls(
             state='open',
             sort='created',
@@ -39,7 +39,7 @@ class SageGithub(object):
         )
         count: int = 0
         for pr in pulls:
-            if count >= limit:
+            if (limit is not None) and (count >= limit):
                 return
             yield SagePullRequest(pr)
             count += 1
