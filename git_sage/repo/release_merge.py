@@ -12,7 +12,7 @@ log = logging.getLogger('git-sage')
 
 
 TEMPLATE = """
-gh-pr-{number}: {title}
+gh-{number}: {title}
     
 {description}
     
