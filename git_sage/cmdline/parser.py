@@ -27,6 +27,12 @@ def cmdline_parser() -> argparse.ArgumentParser:
         type=int,
         help='Limit number of PRs', 
         default=10)
+    parser_todo.add_argument(
+        '-b', '--only-blocker',
+        dest='only_blocker',
+        help='only list blockers', 
+        default=False,
+        action='store_true')
     
     parser_merge = subparsers.add_parser(
         'merge',
@@ -37,6 +43,12 @@ def cmdline_parser() -> argparse.ArgumentParser:
         type=int,
         help='Auto-merge this many outstanding PRs', 
         default=0)
+    parser_merge.add_argument(
+        '-b', '--only-blocker',
+        dest='only_blocker',
+        help='only list blockers', 
+        default=False,
+        action='store_true')
     parser_merge.add_argument(
         'pr_number',
         nargs='*',

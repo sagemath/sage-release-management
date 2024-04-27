@@ -33,12 +33,12 @@ class Application(object):
             config=self.config,
         )
 
-    def todo_cmd(self, limit: int) -> None:
+    def todo_cmd(self, limit: int, only_blocker: bool) -> None:
         """
         Print the next open pull requests
         """
-        self.github.print_table(limit)
+        self.github.print_table(limit, only_blocker)
 
-    def merge_cmd(self, pr_numbers: List[int], limit: int) -> None:
+    def merge_cmd(self, pr_numbers: List[int], limit: int, only_blocker: bool) -> None:
         cmd = MergeCommand(self.sage, self.github)
-        cmd(pr_numbers, limit)
+        cmd(pr_numbers, limit, only_blocker)

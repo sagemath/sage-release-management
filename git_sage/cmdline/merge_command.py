@@ -15,23 +15,27 @@ class MergeCommand(object):
         self.sage: Final[SageRepository] = sage
         self.github: Final[SageGithub] = github
 
-    def _merge_specific_pr_numbers(self, pr_numbers: List[int]) -> None:
+    def _merge_specific_pr_numbers(self, pr_numbers: List[int], force: bool) -> None:
         for pr_number in pr_numbers:
             spr = self.github.get_pull(pr_number)
-            if not spr.is_positive_review:
+            if not (force or spr.is_positive_review):
                 raise ValueError(f'pr {pr_number} does not have positive review')
             print(f'Merging {spr.pr}')
             self.sage.merge_pr(spr.pr)
 
-    def _merge_all(self, limit: int) -> None:
-        for spr in islice(self.github.pull_requests(None), limit):
+    def _merge_all(self, limit: int, only_blocker: bool) -> None:
+        for spr in islice(self.github.pull_requests(None, only_blocker), limit):
             if not spr.is_positive_review:
                 continue
             print(f'Merging {spr.pr}')
             self.sage.merge_pr(spr.pr)
         
-    def __call__(self, pr_numbers: List[int], limit: int) -> None:
+    def __call__(self,
+                 pr_numbers: List[int],
+                 limit: int,
+                 only_blocker: bool,
+                 ) -> None:
         if pr_numbers:
-            self._merge_specific_pr_numbers(pr_numbers)
+            self._merge_specific_pr_numbers(pr_numbers, True)
         else:
-            self._merge_all(limit)
+            self._merge_all(limit, only_blocker)

@@ -57,7 +57,7 @@ class ReleaseMerge(object):
         return TEMPLATE.format(
             number=self.pr.number,
             title=self.pr.title,
-            description=wrap_lines(self.pr.body),
+            description=wrap_lines(self.pr.body or ''),
             url=self.pr.html_url,
             user=user_name(self.pr.user),
             reviewers=', '.join(self.reviewer_names),

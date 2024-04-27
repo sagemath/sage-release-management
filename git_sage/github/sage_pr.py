@@ -15,13 +15,26 @@ class SagePullRequest(object):
     @cached_property
     def is_positive_review(self) -> bool:
         """
-        Use the 's: positive review' label
+        Use the 's: positive review' and 's: needs work' labels
         """
+        is_needs_work = False
+        is_positive_review = False
         for label in self.pr.labels:
             log.debug(f'pr {self.pr.number} label: {label.name}')
-            if label.name == 's: positive review':
-                return True
-        return False
+            is_positive_review = is_positive_review or (label.name == 's: positive review')
+            is_needs_work = is_needs_work or (label.name == 's: needs work')
+        return is_positive_review and not is_needs_work
+
+    @cached_property
+    def is_blocker(self) -> bool:
+        """
+        Use the 's: blocker / 1' label
+        """
+        is_blocker = False
+        for label in self.pr.labels:
+            log.debug(f'pr {self.pr.number} label: {label.name}')
+            is_blocker = is_blocker or (label.name == 'p: blocker / 1')
+        return is_blocker
 
         
         # """

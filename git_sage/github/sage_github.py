@@ -31,7 +31,7 @@ class SageGithub(object):
         pr = self.repo.get_pull(pr_number)
         return SagePullRequest(pr)
     
-    def pull_requests(self, limit: Optional[int]) -> Iterable[SagePullRequest]:
+    def pull_requests(self, limit: Optional[int], only_blocker: bool) -> Iterable[SagePullRequest]:
         pulls = self.repo.get_pulls(
             state='open',
             sort='created',
@@ -41,9 +41,12 @@ class SageGithub(object):
         for pr in pulls:
             if (limit is not None) and (count >= limit):
                 return
-            yield SagePullRequest(pr)
+            spr = SagePullRequest(pr)
+            if only_blocker and not spr.is_blocker:
+                continue
+            yield spr
             count += 1
 
-    def print_table(self, limit: int) -> None:
-        table = PullRequestTable(self.pull_requests(limit))
+    def print_table(self, limit: int, only_blocker: bool) -> None:
+        table = PullRequestTable(self.pull_requests(limit, only_blocker))
         table.stream_print()

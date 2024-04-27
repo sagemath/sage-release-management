@@ -16,6 +16,6 @@ def main() -> None:
     # logging.basicConfig(level=logging.DEBUG)
     app = Application()
     if args.subcommand == 'todo':
-        app.todo_cmd(args.limit)
+        app.todo_cmd(args.limit, args.only_blocker)
     if args.subcommand == 'merge':
-        app.merge_cmd(args.pr_number, args.limit)
+        app.merge_cmd(args.pr_number, args.limit, args.only_blocker)
