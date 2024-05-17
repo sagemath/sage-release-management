@@ -6,7 +6,8 @@ from git_sage.repo.wrap_lines import wrap_lines
 from git_sage.util.uniq import uniq
 from github.NamedUser import NamedUser
 from github.PullRequest import PullRequest
-from pygit2 import Branch, Commit, Remote, RemoteCallbacks, Repository
+from pygit2 import Branch, Commit, GitError, Remote, RemoteCallbacks, Repository
+from pygit2.enums import ResetMode  # type: ignore
 
 log = logging.getLogger('git-sage')
 
@@ -76,10 +77,16 @@ class ReleaseMerge(object):
         Add the release commit to the repository, and return the merge commit
         """
         log.info(f'Merging {self.pr}')
+        head = self.repo.head
         branch_tip = self.branch_tip.oid
         self.repo.merge(branch_tip)
         user = self.repo.default_signature
-        tree = self.repo.index.write_tree()
+        try:
+            tree = self.repo.index.write_tree()
+        except GitError as error:
+            log.error(error)
+            self.repo.reset(head.target, ResetMode.HARD)
+            raise MergeConflictException(self.pr.number)
         message = self.message
         merge_commit = self.repo.create_commit(
             'HEAD', user, user, message, tree,

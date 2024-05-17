@@ -39,6 +39,10 @@ class Application(object):
         """
         self.github.print_table(limit, only_blocker)
 
-    def merge_cmd(self, pr_numbers: List[int], limit: int, only_blocker: bool) -> None:
+    def merge_cmd(self,
+                  pr_numbers: list[int],
+                  exclude: list[int],
+                  limit: int,
+                  only_blocker: bool) -> None:
         cmd = MergeCommand(self.sage, self.github)
-        cmd(pr_numbers, limit, only_blocker)
+        cmd(pr_numbers, exclude, limit, only_blocker)

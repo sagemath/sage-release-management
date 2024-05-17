@@ -18,4 +18,4 @@ def main() -> None:
     if args.subcommand == 'todo':
         app.todo_cmd(args.limit, args.only_blocker)
     if args.subcommand == 'merge':
-        app.merge_cmd(args.pr_number, args.limit, args.only_blocker)
+        app.merge_cmd(args.pr_number, args.exclude, args.limit, args.only_blocker)

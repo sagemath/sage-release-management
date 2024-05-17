@@ -38,6 +38,14 @@ def cmdline_parser() -> argparse.ArgumentParser:
         'merge',
         help='merge pull requests')
     parser_merge.add_argument(
+        '-x', '--exclude',
+        dest='exclude',
+        nargs='+',
+        type=int,
+        help='Exclude PRs',
+        default=(),
+    )
+    parser_merge.add_argument(
         '-l', '--limit',
         dest='limit', 
         type=int,
